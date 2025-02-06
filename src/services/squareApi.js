@@ -9,47 +9,61 @@ const api = axios.create({
 });
 
 export const createCatalogItem = async () => {
-  const response = await api.post("/catalog/object", {
-    idempotencyKey: Date.now().toString(),
+  const data = {
+    idempotencyKey: crypto.randomUUID(),
     object: {
       type: "ITEM",
+      id: "#TestOrder",
       itemData: {
         name: "Test Order",
         variations: [
           {
             type: "ITEM_VARIATION",
-            id: "#variation",
+            id: "#TestOrderVariation",
             itemVariationData: {
-              priceMoney: {
+              pricingType: "FIXED_PRICING",
+              price: {
                 amount: 0,
                 currency: "USD"
-              },
-              pricing_type: "FIXED_PRICING"
+              }
             }
           }
         ],
-        isArchived: false,
-        presentAtAllLocations: true,
-        productType: "REGULAR",
-        visibility: "VISIBILITY_PUBLIC"
+        channels: ["ONLINE"]
       }
     }
-  });
+  };
+
+  const response = await api.post("/catalog/object", data);
   return response.data;
 };
 
-export const createOrder = async (itemVariationId) => {
-  const response = await api.post("/orders", {
-    idempotencyKey: Date.now().toString(),
+export const createOrder = async (variationId) => {
+  const data = {
     order: {
       lineItems: [
         {
-          quantity: "1",
-          catalogObjectId: itemVariationId
+          catalogObjectId: variationId,
+          quantity: "1"
+        }
+      ],
+      fulfillments: [
+        {
+          type: "PICKUP",
+          state: "PROPOSED",
+          pickupDetails: {
+            recipient: {
+              displayName: "Test Customer"
+            },
+            pickupAt: new Date(Date.now() + 3600000).toISOString()
+          }
         }
       ]
-    }
-  });
+    },
+    idempotencyKey: crypto.randomUUID()
+  };
+
+  const response = await api.post("/orders", data);
   return response.data;
 };
 
