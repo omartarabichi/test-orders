@@ -1,37 +1,26 @@
-import React, { useState } from "react";
-import {
-  ChakraProvider,
-  Box,
-  Button,
-  Alert,
-  AlertIcon,
-  AlertTitle,
-  AlertDescription,
-} from "@chakra-ui/react";
+import React from 'react';
+import { createOrder } from './services/squareApi';
+import './App.css';
 
 function App() {
-  const [isLoading, setIsLoading] = useState(false);
-  const [status, setStatus] = useState(null);
+  const [message, setMessage] = React.useState('');
 
-  const handleCreateTestOrder = async () => {
-    // We will add the Square API calls here
-    alert("Button clicked!");
+  const handleCreateOrder = async () => {
+    try {
+      await createOrder();
+      setMessage('Test completed successfully!');
+    } catch (error) {
+      console.error('Error:', error);
+      setMessage('Error creating test order. Check console for details.');
+    }
   };
 
   return (
-    <ChakraProvider>
-      <Box p={8}>
-        <Button
-          colorScheme="blue"
-          onClick={handleCreateTestOrder}
-          isLoading={isLoading}
-          loadingText="Creating order..."
-          mb={4}
-        >
-          Create test order
-        </Button>
-      </Box>
-    </ChakraProvider>
+    <div className="App">
+      <h1>Square Online Test Orders</h1>
+      <button onClick={handleCreateOrder}>Create Test Order</button>
+      {message && <p>{message}</p>}
+    </div>
   );
 }
 
