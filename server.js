@@ -13,17 +13,10 @@ console.log('SQUARE_ACCESS_TOKEN:', process.env.SQUARE_ACCESS_TOKEN ? 'Present' 
 console.log('Token starts with:', process.env.SQUARE_ACCESS_TOKEN?.substring(0, 10));
 
 // Most permissive CORS settings
-app.use((req, res, next) => {
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
-  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
-  res.setHeader('Access-Control-Allow-Credentials', 'true');
-  
-  if (req.method === 'OPTIONS') {
-    return res.sendStatus(200);
-  }
-  next();
-});
+app.use(cors({
+  origin: ['http://localhost:3000', 'https://your-app-name.netlify.app'],
+  credentials: true
+}));
 
 // Basic middleware
 app.use(express.json({ limit: '50mb' }));
